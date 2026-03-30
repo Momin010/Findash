@@ -1,0 +1,5 @@
+{
+  "name": "Findash",
+  "description": "A personal finance tracker that categorizes expenses, sets budget limits, and provides monthly spending insights.",
+  "requestFramePermissions": []
+}

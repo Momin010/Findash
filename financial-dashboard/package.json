@@ -1,0 +1,28 @@
+{
+  "name": "financial-dashboard",
+  "version": "1.0.0",
+  "description": "Personalized financial dashboard powered by Vertex AI",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"bun run dev:client\" \"bun run dev:server\"",
+    "dev:client": "cd client && bun run dev",
+    "dev:server": "cd server && bun run dev",
+    "build": "cd client && bun run build",
+    "start": "cd server && bun run start",
+    "lint": "cd client && bun run lint"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "concurrently": "^8.2.2",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@google-cloud/vertexai": "^1.10.3"
+  }
+}
