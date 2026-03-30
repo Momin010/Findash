@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { supabaseAdmin } from '../_lib/supabase';
+import { supabaseAdmin } from '../_lib/supabase.js';
 
 const ALLOWED_EMAILS = ['momin.aldahdooh@mowisai.com', 'wasay@mowisai.com'];
 
