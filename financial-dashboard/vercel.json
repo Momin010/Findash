@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "buildCommand": "cd client && npm install && npm run build",
+  "outputDirectory": "client/dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/api/health", "destination": "/api/health" },
+    { "source": "/api/auth/:path*", "destination": "/api/auth" },
+    { "source": "/api/accounts/:path*", "destination": "/api/accounts" },
+    { "source": "/api/transactions/:path*", "destination": "/api/transactions" },
+    { "source": "/api/budgets/:path*", "destination": "/api/budgets" },
+    { "source": "/api/categories/:path*", "destination": "/api/categories" },
+    { "source": "/api/investments/:path*", "destination": "/api/investments" },
+    { "source": "/api/invoices/:path*", "destination": "/api/invoices" },
+    { "source": "/api/chat/:path*", "destination": "/api/chat" },
+    { "source": "/api/analytics/:path*", "destination": "/api/analytics" },
+    { "source": "/api/files/:path*", "destination": "/api/files" },
+    { "source": "/api/collaboration/:path*", "destination": "/api/collaboration" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    }
+  ]
+}
