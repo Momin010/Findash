@@ -1,32 +1,10 @@
 {
-  "version": 2,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "client/dist",
   "framework": "vite",
-  "functions": {
-    "api/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "routes": [
-    { "src": "/api/health", "dest": "/api/health.ts" },
-    { "src": "/api/accounts/(.*)", "dest": "/api/accounts.ts" },
-    { "src": "/api/transactions/(.*)", "dest": "/api/transactions.ts" },
-    { "src": "/api/budgets/(.*)", "dest": "/api/budgets.ts" },
-    { "src": "/api/categories/(.*)", "dest": "/api/categories.ts" },
-    { "src": "/api/dashboard/(.*)", "dest": "/api/dashboard.ts" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
-      ]
-    }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
