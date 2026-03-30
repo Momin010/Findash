@@ -3,6 +3,11 @@
   "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "client/dist",
   "framework": "vite",
+  "functions": {
+    "api/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "routes": [
     { "src": "/api/health", "dest": "/api/health.ts" },
     { "src": "/api/auth/(.*)", "dest": "/api/auth.ts" },

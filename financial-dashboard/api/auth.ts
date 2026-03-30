@@ -17,21 +17,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
 
-  const path = req.query.path || [];
-  const action = Array.isArray(path) ? path[0] : path;
+  // Extract action from URL path
+  const urlPath = req.url || '';
+  const pathMatch = urlPath.match(/\/api\/auth\/?([^?]*)/);
+  const action = pathMatch ? pathMatch[1] : '';
+
+  console.log('Auth request:', req.method, urlPath, 'action:', action);
 
   try {
-    if (action === 'register' && req.method === 'POST') {
+    if ((action === 'register' || urlPath.includes('/register')) && req.method === 'POST') {
       return await handleRegister(req, res);
     }
-    if (action === 'login' && req.method === 'POST') {
+    if ((action === 'login' || urlPath.includes('/login')) && req.method === 'POST') {
       return await handleLogin(req, res);
     }
-    if (action === 'me' && req.method === 'GET') {
+    if ((action === 'me' || urlPath.includes('/me')) && req.method === 'GET') {
       return await handleGetMe(req, res);
     }
 
-    return res.status(404).json({ success: false, error: 'Not found' });
+    return res.status(404).json({ success: false, error: `Not found: ${action}` });
   } catch (error) {
     console.error('Auth error:', error);
     return res.status(500).json({ success: false, error: 'Internal server error' });
