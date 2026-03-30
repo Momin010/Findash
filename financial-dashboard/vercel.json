@@ -3,20 +3,17 @@
   "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "client/dist",
   "framework": "vite",
-  "rewrites": [
-    { "source": "/api/health", "destination": "/api/health" },
-    { "source": "/api/auth/:path*", "destination": "/api/auth" },
-    { "source": "/api/accounts/:path*", "destination": "/api/accounts" },
-    { "source": "/api/transactions/:path*", "destination": "/api/transactions" },
-    { "source": "/api/budgets/:path*", "destination": "/api/budgets" },
-    { "source": "/api/categories/:path*", "destination": "/api/categories" },
-    { "source": "/api/investments/:path*", "destination": "/api/investments" },
-    { "source": "/api/invoices/:path*", "destination": "/api/invoices" },
-    { "source": "/api/chat/:path*", "destination": "/api/chat" },
-    { "source": "/api/analytics/:path*", "destination": "/api/analytics" },
-    { "source": "/api/files/:path*", "destination": "/api/files" },
-    { "source": "/api/collaboration/:path*", "destination": "/api/collaboration" },
-    { "source": "/(.*)", "destination": "/index.html" }
+  "routes": [
+    { "src": "/api/health", "dest": "/api/health.ts" },
+    { "src": "/api/auth/(.*)", "dest": "/api/auth.ts" },
+    { "src": "/api/accounts/(.*)", "dest": "/api/accounts.ts" },
+    { "src": "/api/transactions/(.*)", "dest": "/api/transactions.ts" },
+    { "src": "/api/budgets/(.*)", "dest": "/api/budgets.ts" },
+    { "src": "/api/categories/(.*)", "dest": "/api/categories.ts" },
+    { "src": "/api/dashboard/(.*)", "dest": "/api/dashboard.ts" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ],
   "headers": [
     {
