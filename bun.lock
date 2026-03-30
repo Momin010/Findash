@@ -1,0 +1,14 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "dependencies": {
+        "tre": "^1.0.5",
+      },
+    },
+  },
+  "packages": {
+    "tre": ["tre@1.0.5", "", {}, "sha512-guyRpz7Xs0Jfbbdix3uYtVQrZVdMb4ZXuvCZffi9txEgxEpaNlf+vVRj6griE8ZIPK6j8W8rLgk+dmasFCs1yg=="],
+  }
+}

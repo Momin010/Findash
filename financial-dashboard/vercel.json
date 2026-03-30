@@ -10,7 +10,6 @@
   },
   "routes": [
     { "src": "/api/health", "dest": "/api/health.ts" },
-    { "src": "/api/auth/(.*)", "dest": "/api/auth.ts" },
     { "src": "/api/accounts/(.*)", "dest": "/api/accounts.ts" },
     { "src": "/api/transactions/(.*)", "dest": "/api/transactions.ts" },
     { "src": "/api/budgets/(.*)", "dest": "/api/budgets.ts" },
