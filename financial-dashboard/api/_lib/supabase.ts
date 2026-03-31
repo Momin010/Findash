@@ -12,14 +12,7 @@ export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 
 export const supabaseAdmin = supabase;
 
-// Cache for workspace owner ID
-let cachedWorkspaceOwnerId: string | null = null;
-
 export async function getWorkspaceOwnerId() {
-  if (cachedWorkspaceOwnerId) {
-    return cachedWorkspaceOwnerId;
-  }
-
   const { data, error } = await supabaseAdmin
     .from('workspace_config')
     .select('owner_id')
@@ -30,17 +23,19 @@ export async function getWorkspaceOwnerId() {
     return null;
   }
 
-  cachedWorkspaceOwnerId = data.owner_id;
   return data.owner_id;
 }
 
 export async function setWorkspaceOwnerId(userId: string) {
-  const { error } = await supabaseAdmin
+  const { data: existingConfig } = await supabaseAdmin
     .from('workspace_config')
-    .update({ owner_id: userId })
-    .eq('is_active', true);
+    .select('id')
+    .eq('is_active', true)
+    .single();
 
-  if (!error) {
-    cachedWorkspaceOwnerId = userId;
+  if (existingConfig) {
+    await supabaseAdmin.from('workspace_config').update({ owner_id: userId }).eq('id', existingConfig.id);
+  } else {
+    await supabaseAdmin.from('workspace_config').insert({ owner_id: userId, is_active: true });
   }
 }

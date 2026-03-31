@@ -25,7 +25,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'POST') {
       const { accountId, categoryId, description, amount, transactionDate, transactionType } = req.body;
       const ownerId = await getWorkspaceOwnerId() || user.id;
-      const { data, error } = await supabaseAdmin.from('transactions').insert({ user_id: ownerId, account_id: accountId, category_id: categoryId, description, amount, transaction_date: transactionDate, transaction_type: transactionType, currency: 'USD' }).select().single();
+      
+      // Get account currency
+      const { data: account } = await supabaseAdmin.from('accounts').select('currency').eq('id', accountId).single();
+      
+      const { data, error } = await supabaseAdmin.from('transactions').insert({ user_id: ownerId, account_id: accountId, category_id: categoryId, description, amount, transaction_date: transactionDate, transaction_type: transactionType, currency: account?.currency || 'USD' }).select().single();
       if (error) return res.status(500).json({ success: false, error: error.message });
       return res.status(201).json({ success: true, data });
     }

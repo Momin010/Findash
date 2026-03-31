@@ -15,7 +15,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'GET') {
       const ownerId = await getWorkspaceOwnerId() || user.id;
       const { type } = req.query;
-      let query = supabaseAdmin.from('categories').select('*').eq('user_id', ownerId).order('name');
+      
+      // Fetch user's own categories + system categories
+      let query = supabaseAdmin.from('categories').select('*').or(`user_id.eq.${ownerId},user_id.is.null`).order('name');
       if (type) query = query.eq('type', type);
       const { data, error } = await query;
       if (error) return res.status(500).json({ success: false, error: error.message });

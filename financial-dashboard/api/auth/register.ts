@@ -33,8 +33,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (profileError) return res.status(500).json({ success: false, error: 'Failed to create profile' });
 
-  if (isFirstUser)
-    await supabaseAdmin.from('workspace_config').update({ owner_id: authData.user.id }).eq('is_active', true);
+  if (isFirstUser) {
+    // Ensure workspace_config exists and set owner
+    const { data: existingConfig } = await supabaseAdmin.from('workspace_config').select('id').eq('is_active', true).single();
+    if (existingConfig) {
+      await supabaseAdmin.from('workspace_config').update({ owner_id: authData.user.id }).eq('id', existingConfig.id);
+    } else {
+      await supabaseAdmin.from('workspace_config').insert({ owner_id: authData.user.id, is_active: true });
+    }
+  }
 
   return res.status(201).json({ success: true, data: { id: authData.user.id, email } });
 }
