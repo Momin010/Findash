@@ -15,18 +15,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (req.method === 'GET') {
-      const { data, error } = await supabaseAdmin.from('accounts').select('*').eq('id', id).single();
+      const { data, error } = await supabaseAdmin.from('accounts').select('*').eq('id', id).eq('user_id', user.id).single();
       if (error || !data) return res.status(404).json({ success: false, error: 'Not found' });
       return res.json({ success: true, data: transform(data) });
     }
     if (req.method === 'PUT') {
       const { name, type, currency, description, isActive } = req.body;
-      const { data, error } = await supabaseAdmin.from('accounts').update({ name, type, currency, description, is_active: isActive, updated_at: new Date().toISOString() }).eq('id', id).select().single();
+      const { data, error } = await supabaseAdmin.from('accounts').update({ name, type, currency, description, is_active: isActive, updated_at: new Date().toISOString() }).eq('id', id).eq('user_id', user.id).select().single();
       if (error) return res.status(500).json({ success: false, error: error.message });
       return res.json({ success: true, data: transform(data) });
     }
     if (req.method === 'DELETE') {
-      const { error } = await supabaseAdmin.from('accounts').update({ is_active: false, updated_at: new Date().toISOString() }).eq('id', id);
+      const { error } = await supabaseAdmin.from('accounts').update({ is_active: false, updated_at: new Date().toISOString() }).eq('id', id).eq('user_id', user.id);
       if (error) return res.status(500).json({ success: false, error: error.message });
       return res.json({ success: true, message: 'Account deleted' });
     }

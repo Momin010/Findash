@@ -14,8 +14,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const id = req.query.id as string;
 
   if (req.method === 'DELETE') {
-    const { error } = await supabaseAdmin.from('transactions').delete().eq('id', id);
-    if (error) return res.status(500).json({ success: false, error: error.message });
+    // Get transaction to verify ownership and reverse balance
+    const { data: transaction, error: fetchError } = await supabaseAdmin.from('transactions').select('amount, transaction_type, account_id, user_id').eq('id', id).single();
+    if (fetchError || !transaction) return res.status(404).json({ success: false, error: 'Transaction not found' });
+    
+    // Verify user owns this transaction
+    if (transaction.user_id !== user.id) return res.status(403).json({ success: false, error: 'Forbidden' });
+    
+    // Get account current balance
+    const { data: account, error: accountError } = await supabaseAdmin.from('accounts').select('balance').eq('id', transaction.account_id).single();
+    if (accountError || !account) return res.status(404).json({ success: false, error: 'Account not found' });
+    
+    // Calculate reversed balance
+    let newBalance = account.balance;
+    if (transaction.transaction_type === 'expense') {
+      newBalance += Math.abs(transaction.amount); // Add back the expense
+    } else if (transaction.transaction_type === 'income') {
+      newBalance -= Math.abs(transaction.amount); // Subtract the income
+    }
+    
+    // Delete transaction
+    const { error: deleteError } = await supabaseAdmin.from('transactions').delete().eq('id', id);
+    if (deleteError) return res.status(500).json({ success: false, error: deleteError.message });
+    
+    // Update account balance
+    await supabaseAdmin.from('accounts').update({ balance: newBalance, updated_at: new Date().toISOString() }).eq('id', transaction.account_id);
+    
     return res.json({ success: true, message: 'Transaction deleted' });
   }
   return res.status(405).end();

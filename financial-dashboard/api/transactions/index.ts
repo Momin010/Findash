@@ -27,11 +27,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const ownerId = await getWorkspaceOwnerId() || user.id;
       
       // Get account currency
-      const { data: account } = await supabaseAdmin.from('accounts').select('currency').eq('id', accountId).single();
+      const { data: account } = await supabaseAdmin.from('accounts').select('currency, balance').eq('id', accountId).single();
+      if (!account) return res.status(404).json({ success: false, error: 'Account not found' });
       
-      const { data, error } = await supabaseAdmin.from('transactions').insert({ user_id: ownerId, account_id: accountId, category_id: categoryId, description, amount, transaction_date: transactionDate, transaction_type: transactionType, currency: account?.currency || 'USD' }).select().single();
+      // Calculate new balance
+      let newBalance = account.balance;
+      if (transactionType === 'expense') {
+        newBalance -= Math.abs(amount);
+      } else if (transactionType === 'income') {
+        newBalance += Math.abs(amount);
+      }
+      
+      // Create transaction and update balance atomically
+      const { data, error } = await supabaseAdmin.from('transactions').insert({ 
+        user_id: ownerId, 
+        account_id: accountId, 
+        category_id: categoryId, 
+        description, 
+        amount, 
+        transaction_date: transactionDate, 
+        transaction_type: transactionType, 
+        currency: account.currency || 'USD' 
+      }).select().single();
+      
       if (error) return res.status(500).json({ success: false, error: error.message });
-      return res.status(201).json({ success: true, data });
+      
+      // Update account balance
+      await supabaseAdmin.from('accounts').update({ balance: newBalance, updated_at: new Date().toISOString() }).eq('id', accountId);
+      
+      return res.status(201).json({ success: true, data: transform(data) });
     }
     return res.status(405).end();
   } catch (e: any) {
