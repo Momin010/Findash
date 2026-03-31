@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { supabaseAdmin, getWorkspaceOwnerId } from '../_lib/supabase';
+import { supabaseAdmin, getWorkspaceOwnerId } from './_lib/supabase.js';
+import { authenticateUser } from './_lib/auth.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,15 +26,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('Dashboard error:', error);
     return res.status(500).json({ success: false, error: 'Internal server error' });
   }
-}
-
-async function authenticateUser(req: VercelRequest) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) return null;
-  
-  const token = authHeader.split(' ')[1];
-  const { data: { user } } = await supabaseAdmin.auth.getUser(token);
-  return user;
 }
 
 async function getDashboardData(req: VercelRequest, res: VercelResponse, userId: string) {
